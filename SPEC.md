@@ -37,7 +37,7 @@ Why: simplest optional-stopping problem; same compare-now-vs-alternative reasoni
 Concept: μ = E[reroll] = (n+1)/2. Keep f if f ≥ μ else reroll. Payout max(f, μ). V = (1/n) Σ_{f=1}^n max(f, μ). Reroll faces = f < μ.
 Approach: faces 1..n; μ via expected_value with probs 1/n; average max(f, μ) via expected_value; reroll set = faces strictly < μ as sorted Python ints.
 Tools: expected_value; np.arange(1, n+1); np.maximum(faces, mu); `int(f)` so output prints `[1, 2, 3]` not `[np.int64(1), ...]`.
-Pitfall: keep/reroll tie rule. Convention: reroll strictly when f < μ, so a face exactly equal to μ is kept. (Page text states this only matters when n is odd; in fact μ=(n+1)/2 is an integer exactly when n is odd.)
+Pitfall: keep/reroll tie rule. Convention: reroll strictly when f < μ, so a face exactly equal to μ is kept. A face can equal μ=(n+1)/2 only when n is odd (μ is then an integer). For even n, μ is a half-integer and no face ties. (The original page text garbles this; this wording is the resolved rule.)
 Example:
 ```
 >>> one_reroll_die_value(2)
@@ -144,7 +144,7 @@ Starter begins with `import numpy as np`.
 Implement `uncertainty_spread(base_spread, uncertainty)`: spread width ≥ base_spread, strictly larger when uncertainty is strictly larger. Non-negative float inputs; single float out. Mapping of uncertainty → extra width is your choice.
 Why: wide spread is buffer against being wrong; fuzzier belief → wider quote or get picked off.
 Concept: base_spread is a floor (still earn something per round trip); uncertainty e.g. std of belief distribution. Need S ≥ base_spread always; u1<u2 ⇒ S(u1)<S(u2).
-Approach: S = base_spread + f(uncertainty), f(0)=0 and strictly increasing. Linear: S = base + k·u (k>0). Also valid: base·(1+k·u), or base + k·u².
+Approach: PINNED FORMULA (owner decision, not open-ended): `S = base_spread + 1.0 * uncertainty`, i.e. linear with k = 1. Return it as a float. Do not use other forms. (Original page allowed any monotone map; pinned so runs are reproducible.)
 Tools: arithmetic; max(a,b) to enforce floor defensively.
 Pitfall: returning base_spread regardless of uncertainty breaks growth property; do not decrease with uncertainty (e.g. dividing).
 Example:
@@ -208,7 +208,7 @@ Example:
 ```
 
 ## 013 run_market_making_episode
-Implement `run_market_making_episode(true_value, counterparty_sides, initial_fair_value, config)`: one full episode. For each side: quote from current fair value, uncertainty, inventory; execute counterparty trade; update fair-value belief; next round. After final round settle at true_value and report P&L. Output dict keys: 'pnl','cash','inventory','fair_value','history' (history = one dict per round with keys 'bid','ask','side','cash','inventory','fair_value'). Reuse make_quotes / uncertainty_spread / inventory_skewed_quotes / execute_trade / update_fair_value_from_trade / mark_to_market_pnl. Config keys 'base_spread','uncertainty','skew_strength','belief_adjustment'; description says default any missing key to 0 (Tools list shows `config.get('base_spread', 1.0)` as an example — page is inconsistent).
+Implement `run_market_making_episode(true_value, counterparty_sides, initial_fair_value, config)`: one full episode. For each side: quote from current fair value, uncertainty, inventory; execute counterparty trade; update fair-value belief; next round. After final round settle at true_value and report P&L. Output dict keys: 'pnl','cash','inventory','fair_value','history' (history = one dict per round with keys 'bid','ask','side','cash','inventory','fair_value'). Reuse make_quotes / uncertainty_spread / inventory_skewed_quotes / execute_trade / update_fair_value_from_trade / mark_to_market_pnl. Config keys 'base_spread','uncertainty','skew_strength','belief_adjustment'. RESOLVED RULE: every missing key defaults to 0, including 'base_spread' (use `config.get(key, 0.0)`). The original page's Tools list showed `config.get('base_spread', 1.0)`; that example is overridden by this rule. A missing 'base_spread' therefore gives a zero-width quote.
 Why: wires every block into one loop: quote, trade, learn, requote; only final P&L matters.
 Concept: hidden true_value revealed at settlement. Start: initial_fair_value belief, cash 0, inventory 0. Per side: spread from uncertainty; (fair, spread, inventory) → skewed (bid, ask); execute (buy hits ask → short one; sell hits bid → long one); update belief toward trade. End: PnL = cash + inventory·true_value.
 Approach pseudocode:
@@ -249,6 +249,27 @@ Example:
 >>> summarize_episode_pnls([-5.0, 0.0, 5.0])
 {'mean': 0.0, 'std': 4.08248290463863, 'worst': -5.0}
 ```
+
+---
+
+## Property checks (REQUIRED in every step's tests, in addition to the page examples)
+
+Added by owner because the original grader's hidden tests are not available. Each step's test file must assert the properties below with plain `assert` loops over a fixed grid of inputs (no new dependencies, no randomness; if random inputs are used, seed them with `np.random.default_rng(0)`).
+
+- 001: EV of a uniform die over 1..n is (n+1)/2. EV of a constant distribution equals the constant. Linearity: E[aX+b] = a·E[X] + b. Return type is `float`.
+- 002: value ≥ (n+1)/2 and ≤ n. Every reroll face < (n+1)/2. List is sorted and holds Python `int`. sides=1 gives value 1.0 and `[]`. Value equals brute-force average of max(f, (n+1)/2).
+- 003: cost 0 gives threshold = sides and value = sides. Threshold in 1..sides. Value is non-increasing as cost rises. Value ≥ (sides+1)/2 (threshold 1 is always available). Result matches a brute-force scan over all thresholds with the smallest-tie rule.
+- 004: value ≥ 0. (r,0) with r>0 gives value r and stop_now False. (0,b) gives 0.0 and True. Value ≤ num_red. Value is non-decreasing in num_red and non-increasing in num_black.
+- 005: (bid+ask)/2 == fair_value. ask − bid == spread_width. bid ≤ ask. Width 0 gives bid == ask == fair.
+- 006: Input dict is not mutated. A buy then a sell of equal size at the same quotes returns inventory to start and raises cash by size·(ask−bid). Inventory change is −size for 'buy' and +size for 'sell'.
+- 007: inventory 0 gives pnl == cash. P&L is linear in settlement_value. A buy-then-sell round trip of equal size has P&L size·(ask−bid) for every settlement value.
+- 008: result ≥ 0. Result is 0.0 when every informed value lies in [bid, ask]. A point mass at v > ask gives exactly v − ask; at v < bid gives exactly bid − v. Narrowing the quotes never lowers the loss.
+- 009: result == base_spread + uncertainty (pinned formula). Result ≥ base_spread. Strictly increasing in uncertainty. Returns `float`.
+- 010: inventory 0 or skew 0 gives the symmetric quote. ask − bid == spread_width for every inventory. Midpoint equals fair_value − skew_strength·inventory exactly and is strictly decreasing in inventory when skew_strength > 0.
+- 011: adjustment 0 returns fair_value unchanged. 'buy' then 'sell' with the same quotes and adjustment returns the original fair_value. Result is strictly monotone in adjustment (up for 'buy', down for 'sell').
+- 012: Total count falls by exactly 1. Input dict is not mutated. No zero-count keys remain. expected_value lies within [min, max] of remaining keys. Revealing every card in turn ends with `{}` and 0.0.
+- 013: history length == len(counterparty_sides). Final cash and inventory equal the last history entry. With unit size, inventory == (#sells − #buys). pnl == mark_to_market_pnl(cash, inventory, true_value). Empty sides gives pnl 0.0 and empty history. With uncertainty, skew and belief_adjustment all 0, an equal number of buys and sells gives inventory 0. A missing config key behaves exactly as 0.0.
+- 014: min ≤ mean ≤ max. std ≥ 0. A constant series gives std 0.0 and worst equal to the constant. worst ≤ mean. Adding a constant c shifts mean and worst by c and leaves std unchanged. Scaling by k>0 scales all three by k. All three values are Python `float`.
 
 ---
 
