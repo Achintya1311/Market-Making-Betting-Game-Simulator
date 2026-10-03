@@ -17,7 +17,7 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 - [x] 008 adverse_selection_loss
 - [x] 009 uncertainty_spread
 - [x] 010 inventory_skewed_quotes
-- [ ] 011 update_fair_value_from_trade
+- [x] 011 update_fair_value_from_trade
 - [ ] 012 update_remaining_card_value
 
 ## Part 4: Episode Simulation & Evaluation
