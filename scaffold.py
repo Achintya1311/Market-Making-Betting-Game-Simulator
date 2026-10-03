@@ -104,8 +104,10 @@ def uncertainty_spread(base_spread, uncertainty):
 
 # ── Step 010  inventory_skewed_quotes ──
 def inventory_skewed_quotes(fair_value, spread_width, inventory, skew_strength):
-    # TODO: return {'bid', 'ask'} shifted against inventory around fair_value
-    pass
+    half = spread_width / 2.0
+    shift = skew_strength * inventory
+    mid = fair_value - shift
+    return {'bid': mid - half, 'ask': mid + half}
 
 
 # ── Step 011  update_fair_value_from_trade ──

@@ -16,7 +16,7 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 ## Part 3: Risk-Aware Quoting & Belief Updates
 - [x] 008 adverse_selection_loss
 - [x] 009 uncertainty_spread
-- [ ] 010 inventory_skewed_quotes
+- [x] 010 inventory_skewed_quotes
 - [ ] 011 update_fair_value_from_trade
 - [ ] 012 update_remaining_card_value
 
