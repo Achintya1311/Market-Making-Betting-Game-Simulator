@@ -3,7 +3,7 @@
 The routine owns this file. It ticks a step only after the step's code is in `scaffold.py`, its tests in `tests/` pass, and the work is committed.
 
 ## Part 1: Expected Value & Betting Games
-- [ ] 001 expected_value
+- [x] 001 expected_value
 - [ ] 002 one_reroll_die_value
 - [ ] 003 pay_per_reroll_die_game
 - [ ] 004 red_black_card_game_value

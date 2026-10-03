@@ -9,8 +9,9 @@ from functools import lru_cache
 
 # ── Step 001  expected_value ──
 def expected_value(values, probabilities):
-    # TODO: return the expected value of the discrete distribution (values, probabilities).
-    pass
+    v = np.asarray(values, dtype=float)
+    p = np.asarray(probabilities, dtype=float)
+    return float(np.sum(v * p))
 
 
 # ── Step 002  one_reroll_die_value ──
