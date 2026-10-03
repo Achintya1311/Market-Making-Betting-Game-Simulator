@@ -172,5 +172,5 @@ def run_market_making_episode(true_value, counterparty_sides, initial_fair_value
 
 # ── Step 014  summarize_episode_pnls ──
 def summarize_episode_pnls(pnls):
-    # TODO: return a dict with keys 'mean', 'std' (ddof=0), and 'worst' for the given P&L sequence.
-    pass
+    arr = np.asarray(pnls, dtype=float)
+    return {'mean': float(arr.mean()), 'std': float(arr.std()), 'worst': float(arr.min())}

@@ -22,7 +22,7 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 
 ## Part 4: Episode Simulation & Evaluation
 - [x] 013 run_market_making_episode
-- [ ] 014 summarize_episode_pnls
+- [x] 014 summarize_episode_pnls
 
 ## Run log
 (one line per routine run: steps done, tests passed, anything blocked)
