@@ -5,7 +5,7 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 ## Part 1: Expected Value & Betting Games
 - [x] 001 expected_value
 - [x] 002 one_reroll_die_value
-- [ ] 003 pay_per_reroll_die_game
+- [x] 003 pay_per_reroll_die_game
 - [ ] 004 red_black_card_game_value
 
 ## Part 2: Core Market-Making Mechanics
