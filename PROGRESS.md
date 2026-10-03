@@ -14,7 +14,7 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 - [x] 007 mark_to_market_pnl
 
 ## Part 3: Risk-Aware Quoting & Belief Updates
-- [ ] 008 adverse_selection_loss
+- [x] 008 adverse_selection_loss
 - [ ] 009 uncertainty_spread
 - [ ] 010 inventory_skewed_quotes
 - [ ] 011 update_fair_value_from_trade
