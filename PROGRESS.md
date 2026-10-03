@@ -26,6 +26,8 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 
 ## Run log
 (one line per routine run: steps done, tests passed, anything blocked)
+- 2026-10-03 UTC: implemented steps 001 (expected_value), 002 (one_reroll_die_value); pytest 12 passed; nothing blocked.
 
 ## Improvement ideas (not implemented, awaiting owner approval)
 (routine appends observations here; it never acts on them)
+- SPEC.md 002's pitfall note says "A face can equal μ=(n+1)/2 only when n is odd" but never states what the property-check grid should do for sides=0 or negative sides; scaffold has no guard and relies on callers passing sides>=1. Worth an explicit note in SPEC.md that sides is a positive integer.
