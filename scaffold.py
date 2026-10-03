@@ -121,8 +121,19 @@ def update_fair_value_from_trade(fair_value, side, bid, ask, adjustment):
 
 # ── Step 012  update_remaining_card_value ──
 def update_remaining_card_value(remaining_counts, revealed_value):
-    # TODO: decrement the revealed card, prune zero counts, and return updated deck + mean value.
-    pass
+    counts = dict(remaining_counts)
+    counts[revealed_value] = counts.get(revealed_value, 0) - 1
+    if counts[revealed_value] <= 0:
+        del counts[revealed_value]
+
+    total = sum(counts.values())
+    if total == 0:
+        ev = 0.0
+    else:
+        values = list(counts.keys())
+        probs = [n / total for n in counts.values()]
+        ev = expected_value(values, probs)
+    return {'remaining_counts': counts, 'expected_value': ev}
 
 
 # ── Step 013  run_market_making_episode ──
