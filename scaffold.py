@@ -84,8 +84,7 @@ def execute_trade(state, side, bid, ask, size=1):
 
 # ── Step 007  mark_to_market_pnl ──
 def mark_to_market_pnl(cash, inventory, settlement_value):
-    # TODO: return total P&L given cash, remaining inventory, and settlement value.
-    pass
+    return cash + inventory * settlement_value
 
 
 # ── Step 008  adverse_selection_loss ──

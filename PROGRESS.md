@@ -11,7 +11,7 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 ## Part 2: Core Market-Making Mechanics
 - [x] 005 make_quotes
 - [x] 006 execute_trade
-- [ ] 007 mark_to_market_pnl
+- [x] 007 mark_to_market_pnl
 
 ## Part 3: Risk-Aware Quoting & Belief Updates
 - [ ] 008 adverse_selection_loss
