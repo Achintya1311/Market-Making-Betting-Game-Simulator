@@ -16,8 +16,13 @@ def expected_value(values, probabilities):
 
 # ── Step 002  one_reroll_die_value ──
 def one_reroll_die_value(sides):
-    # TODO: return {'value': expected winnings under optimal reroll policy, 'reroll_faces': sorted faces to reroll}
-    pass
+    n = sides
+    faces = np.arange(1, n + 1)
+    mu = expected_value(faces, [1.0 / n] * n)
+    payouts = np.maximum(faces, mu)
+    value = expected_value(payouts, [1.0 / n] * n)
+    reroll_faces = sorted(int(f) for f in faces if f < mu)
+    return {'value': value, 'reroll_faces': reroll_faces}
 
 
 # ── Step 003  pay_per_reroll_die_game ──
