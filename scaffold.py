@@ -39,8 +39,28 @@ def pay_per_reroll_die_game(sides, reroll_cost):
 
 # ── Step 004  red_black_card_game_value ──
 def red_black_card_game_value(num_red, num_black):
-    # TODO: return {'value': expected payout under optimal stopping, 'stop_now': whether to stop immediately}.
-    pass
+    @lru_cache(maxsize=None)
+    def V(r, b):
+        if r == 0:
+            return 0.0
+        if b == 0:
+            return float(r)
+        red_term = (r / (r + b)) * (1.0 + V(r - 1, b))
+        black_term = (b / (r + b)) * (-1.0 + V(r, b - 1))
+        return max(0.0, red_term + black_term)
+
+    r, b = num_red, num_black
+    if r + b == 0 or r == 0:
+        cont = 0.0
+    elif b == 0:
+        cont = float(r)
+    else:
+        red_term = (r / (r + b)) * (1.0 + V(r - 1, b))
+        black_term = (b / (r + b)) * (-1.0 + V(r, b - 1))
+        cont = red_term + black_term
+    value = max(0.0, cont)
+    stop_now = cont <= 0.0
+    return {'value': value, 'stop_now': stop_now}
 
 
 # ── Step 005  make_quotes ──
