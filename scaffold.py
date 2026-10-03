@@ -138,8 +138,36 @@ def update_remaining_card_value(remaining_counts, revealed_value):
 
 # ── Step 013  run_market_making_episode ──
 def run_market_making_episode(true_value, counterparty_sides, initial_fair_value, config):
-    # TODO: loop over counterparty_sides, quote, trade, update beliefs, then settle at true_value.
-    pass
+    base_spread = config.get('base_spread', 0.0)
+    uncertainty = config.get('uncertainty', 0.0)
+    skew_strength = config.get('skew_strength', 0.0)
+    belief_adjustment = config.get('belief_adjustment', 0.0)
+
+    cash, inventory, fair_value = 0.0, 0.0, initial_fair_value
+    history = []
+    for side in counterparty_sides:
+        spread_width = uncertainty_spread(base_spread, uncertainty)
+        quotes = inventory_skewed_quotes(fair_value, spread_width, inventory, skew_strength)
+        state = execute_trade({'cash': cash, 'inventory': inventory}, side, quotes['bid'], quotes['ask'])
+        cash, inventory = state['cash'], state['inventory']
+        fair_value = update_fair_value_from_trade(fair_value, side, quotes['bid'], quotes['ask'], belief_adjustment)
+        history.append({
+            'bid': quotes['bid'],
+            'ask': quotes['ask'],
+            'side': side,
+            'cash': cash,
+            'inventory': inventory,
+            'fair_value': fair_value,
+        })
+
+    pnl = mark_to_market_pnl(cash, inventory, true_value)
+    return {
+        'pnl': pnl,
+        'cash': cash,
+        'inventory': inventory,
+        'fair_value': fair_value,
+        'history': history,
+    }
 
 
 # ── Step 014  summarize_episode_pnls ──

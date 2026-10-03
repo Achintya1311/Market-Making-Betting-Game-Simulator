@@ -21,7 +21,7 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 - [x] 012 update_remaining_card_value
 
 ## Part 4: Episode Simulation & Evaluation
-- [ ] 013 run_market_making_episode
+- [x] 013 run_market_making_episode
 - [ ] 014 summarize_episode_pnls
 
 ## Run log
