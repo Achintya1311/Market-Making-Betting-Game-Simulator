@@ -9,7 +9,7 @@ The routine owns this file. It ticks a step only after the step's code is in `sc
 - [x] 004 red_black_card_game_value
 
 ## Part 2: Core Market-Making Mechanics
-- [ ] 005 make_quotes
+- [x] 005 make_quotes
 - [ ] 006 execute_trade
 - [ ] 007 mark_to_market_pnl
 

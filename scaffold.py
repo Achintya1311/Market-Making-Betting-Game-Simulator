@@ -65,8 +65,8 @@ def red_black_card_game_value(num_red, num_black):
 
 # ── Step 005  make_quotes ──
 def make_quotes(fair_value, spread_width):
-    # TODO: return a dict with 'bid' and 'ask' symmetric around fair_value with total width spread_width
-    pass
+    half = spread_width / 2.0
+    return {'bid': fair_value - half, 'ask': fair_value + half}
 
 
 # ── Step 006  execute_trade ──
